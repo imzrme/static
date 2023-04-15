@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', initOuterLinkInComment);
 function initOuterLinkInComment() {
     document.querySelectorAll('.comment-list a[href^="' + location.origin + '/go/"]').forEach(a => a.target = '_blank');
 }
-</script>
-<script>
     document.addEventListener('DOMContentLoaded', initLiveDay);
     function initLiveDay() {
     const birthTime = '2017/8/21 10:23:12';

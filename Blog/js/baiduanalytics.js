@@ -6,7 +6,3 @@ var _hmt = _hmt || [];
     s.parentNode.insertBefore(hm, s);
 })();
 window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-
-gtag('config', 'G-1JKMBXDPBB');
