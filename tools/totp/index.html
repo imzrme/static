@@ -1,98 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MFA验证码获取</title>
-  <link rel="stylesheet" href="https://static.mzrme.com/tools/totp/css/bulma-0.9.4.min.css">
-  <link href="https://static.mzrme.com/favicon.ico" rel="icon" type="image/x-icon" />
-  <style>
-    [v-cloak] {
-      display: none;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MFA验证码获取</title>
+    <link rel="stylesheet" href="https://static.mzrme.com/tools/totp/css/bulma-0.9.4.min.css">
+    <link href="https://static.mzrme.com/favicon.ico" rel="icon" type="image/x-icon" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
 
-    html, body {
-      height: 100%;
-    }
+        html, body {
+            height: 100%;
+        }
 
-    body > footer {
-      position: sticky;
-      top: 100vh;
-    }
+        /* --- Dark Mode Styles --- */
+        body.is-dark {
+            background-color: #0a0a0a;
+            color: #f5f5f5;
+        }
 
-    .footer {
-      padding: 2rem;
-    }
+        body.is-dark .title,
+        body.is-dark .label {
+            color: #f5f5f5;
+        }
 
-    @media screen and (min-width: 1068px) {
-      .container {
-        max-width: 600px;
-        width: 600px;
-      }
-    }
-  </style>
+        body.is-dark .input {
+            background-color: #1a1a1a;
+            border-color: #363636;
+            color: #f5f5f5;
+        }
+
+        body.is-dark .input::placeholder {
+            color: #666;
+        }
+
+        body.is-dark .box {
+            background-color: #1a1a1a;
+            border: 1px solid #363636;
+        }
+
+        body.is-dark .has-text-grey {
+            color: #aaaaaa !important;
+        }
+        /* --- End Dark Mode Styles --- */
+
+
+        body > footer {
+            position: sticky;
+            top: 100vh;
+        }
+
+        .footer {
+            padding: 2rem;
+        }
+
+        @media screen and (min-width: 1068px) {
+            .container {
+                max-width: 600px;
+                width: 600px;
+            }
+        }
+    </style>
 </head>
-<body>
+<body> <script defer src="https://static.mzrme.com/tools/totp/js/assets/vue-3.4.20.global.prod.js"></script>
+<script defer src="https://static.mzrme.com/tools/totp/js/assets/otpauth-9.1.3.min.js"></script>
+<script defer src="https://static.mzrme.com/tools/totp/js/assets/clipboard-2.0.6.min.js"></script>
+<script defer src="https://static.mzrme.com/tools/totp/js/app.js?v=1.2"></script>
 
-  <script defer src="https://static.mzrme.com/tools/totp/js/assets/vue-3.4.20.global.prod.js"></script>
-  <script defer src="https://static.mzrme.com/tools/totp/js/assets/otpauth-9.1.3.min.js"></script>
-  <script defer src="https://static.mzrme.com/tools/totp/js/assets/clipboard-2.0.6.min.js"></script>
-  <script defer src="https://static.mzrme.com/tools/totp/js/app.js?v=1.2"></script>
-
-  <section id="app" class="section" v-cloak>
+<section id="app" class="section" v-cloak>
 
     <div class="container">
 
-      <h1 class="title">MFA验证码获取</h1>
-
-      <div class="field">
-        <label class="label is-uppercase">您的密钥</label>
-        <div class="control">
-          <input class="input" type="text" v-model="secret_key" placeholder="The secret key (in base-32 format)">
+        <div class="is-clearfix">
+            <h1 class="title is-pulled-left">MFA验证码获取</h1>
+            <a class="button is-small is-pulled-right is-primary is-inverted" @click="toggleDarkMode" style="margin-top: 0.5rem;">
+                {{ isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
+            </a>
         </div>
-      </div>
 
-      <div class="field">
-        <label class="label is-uppercase">MFA验证码位数</label>
-        <div class="control">
-          <input class="input" type="text" v-model="digits" placeholder="Usually 6">
+        <div class="field">
+            <label class="label is-uppercase">您的密钥</label>
+            <div class="control">
+                <input class="input" type="text" v-model="secret_key" placeholder="The secret key (in base-32 format)">
+            </div>
         </div>
-      </div>
 
-      <div class="field">
-        <label class="label is-uppercase">令牌周期（以秒为单位）</label>
-        <div class="control">
-          <input class="input" type="text" v-model="period" placeholder="Usually 30">
+        <div class="field">
+            <label class="label is-uppercase">MFA验证码位数</label>
+            <div class="control">
+                <input class="input" type="text" v-model="digits" placeholder="Usually 6">
+            </div>
         </div>
-      </div>
 
-      <div class="content">
-        <span class="has-text-grey is-size-7"> {{ updatingIn }} 秒内刷新</span>
-        <progress class="progress is-info is-small" v-bind:value="updatingIn" :max="period"></progress>
-      </div>
+        <div class="field">
+            <label class="label is-uppercase">令牌周期（以秒为单位）</label>
+            <div class="control">
+                <input class="input" type="text" v-model="period" placeholder="Usually 30">
+            </div>
+        </div>
 
-      <div class="box">
-        <p class="title is-size-1 has-text-centered" id="token">{{ token }}</p>
-      </div>
+        <div class="content">
+            <span class="has-text-grey is-size-7"> {{ updatingIn }} 秒内刷新</span>
+            <progress class="progress is-info is-small" v-bind:value="updatingIn" :max="period"></progress>
+        </div>
 
-      <div class="control is-clearfix">
-        <a class="button is-large is-light is-pulled-right" id="clipboard-button" data-clipboard-target="#token" title="Copy token to clipboard">
-          <img src="https://static.mzrme.com/tools/totp/img/clippy.svg" height="36" width="36">
-        </a>
-      </div>
+        <div class="box">
+            <p class="title is-size-1 has-text-centered" id="token">{{ token }}</p>
+        </div>
+
+        <div class="control is-clearfix">
+            <a class="button is-large is-light is-pulled-right" id="clipboard-button" data-clipboard-target="#token" title="Copy token to clipboard">
+                <img src="https://static.mzrme.com/tools/totp/img/clippy.svg" height="36" width="36">
+            </a>
+        </div>
 
     </div>
 
-  </section>
+</section>
 
-  <footer class="footer">
+<footer class="footer">
     <div class="container">
-      <div class="content has-text-centered">
-        Built by <a href="https://mzrme.com">MZRME'S</a>. Source on <a href="https://github.com/jaden/totp-generator">Github</a>.<p>
-        Powered by Azure Static App Service & Azure Frontdoor
-      </div>
+        <div class="content has-text-centered">
+            Built by <a href="https://mzrme.com">MZRME'S</a>. Source on <a href="https://github.com/jaden/totp-generator">Github</a>.<p>
+            Powered by Azure Static App Service & Azure Frontdoor
+        </div>
     </div>
-  </footer>
+</footer>
 
 </body>
 </html>
