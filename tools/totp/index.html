@@ -60,6 +60,33 @@
         }
         /* --- End Dark Mode Styles --- */
 
+        /* [FIX] 修复1：暗黑模式下，模式切换按钮（.is-primary.is-inverted）颜色仍为白色 */
+        body.is-dark .button.is-primary.is-inverted {
+            background-color: #2c2c2c !important;
+            border-color: #444444 !important;
+            color: #f5f5f5 !important;
+        }
+
+        /* [FIX] 修复1：暗黑模式下，模式切换按钮的悬停状态 */
+        body.is-dark .button.is-primary.is-inverted:hover {
+            background-color: #444444 !important;
+            border-color: #666666 !important;
+            color: #f5f5f5 !important;
+        }
+
+        /* [FIX] 修复2：暗黑模式下，复制按钮（.is-light）的样式 */
+        body.is-dark .button.is-light {
+            background-color: #2c2c2c !important;
+            border-color: #444444 !important;
+            color: #f5f5f5 !important;
+        }
+
+        /* [FIX] 修复3：暗黑模式下，复制按钮的SVG图标颜色 */
+        body.is-dark #clipboard-button img {
+            /* 反转颜色：将黑色变为白色，适用于单色图标 */
+            filter: invert(1);
+        }
+
 
         body > footer {
             position: sticky;
