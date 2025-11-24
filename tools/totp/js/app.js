@@ -42,7 +42,7 @@ const app = Vue.createApp({
 
     watch: {
         isDarkMode: function(isDark) {
-            this.applyDarkModeClass(isDark); // isDarkMode 变化时，应用样式
+            this.applyDarkModeClass(isDark);
         }
     },
 
@@ -50,7 +50,7 @@ const app = Vue.createApp({
         this.getKeyFromUrl();
         this.getQueryParameters()
         this.initializeDarkMode();
-        this.applyDarkModeClass(this.isDarkMode); // 关键修复：确保初始化后应用正确的样式
+        this.applyDarkModeClass(this.isDarkMode);
         this.update();
 
         this.intervalHandle = setInterval(this.update, 1000);
@@ -81,9 +81,12 @@ const app = Vue.createApp({
 
         // 暗黑模式 DOM 操作方法
         applyDarkModeClass: function (isDark) {
+            // 操作 html 元素 (document.documentElement) 和 body 元素
             if (isDark) {
+                document.documentElement.classList.add('is-dark');
                 document.body.classList.add('is-dark');
             } else {
+                document.documentElement.classList.remove('is-dark');
                 document.body.classList.remove('is-dark');
             }
         },
